@@ -28,7 +28,10 @@ jobs:
 
       - name: Test alert
         if: inputs.test_alert
-        run: ./notify-hook "Test alert" "The email channel works. A real alert looks like: Seats open 2026-08-08 7:00pm, F11-F12. You can close this issue."
+        run: >-
+          ./notify-hook "Test alert"
+          "The email channel works. A real alert reads 'Seats open 2026-08-08
+          7:00pm, F11-F12'. You can close this issue."
 
       - name: Run sweep
         if: ${{ !inputs.test_alert }}
