@@ -297,17 +297,17 @@ def main() -> None:
         print(f"another watcher is already running (pid in {LOCK_FILE}); exiting")
         sys.exit(1)
 
-    cycle = 0
     while True:
         state = load_state()
+        cycle = state.get("cycle", 0)  # persisted so --once runs (CI) keep cadence
         try:
             sweep(state, scan_dates=(cycle % DATE_SCAN_EVERY == 0), only_dates=args.dates)
         except Exception as e:  # noqa: BLE001 — keep the loop alive on transient errors
             log(f"ERROR during sweep: {e!r}")
+        state["cycle"] = cycle + 1
         save_state(state)
         if args.once:
             break
-        cycle += 1
         sleep_s = POLL_MINUTES * 60 + random.uniform(-30, 30)
         log(f"sleeping {sleep_s / 60:.1f} min")
         time.sleep(sleep_s)
